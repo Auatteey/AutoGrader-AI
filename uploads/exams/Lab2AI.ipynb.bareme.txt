@@ -1,0 +1,572 @@
+{
+  "cells": [
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "0Uf7_IMGcuFA"
+      },
+      "outputs": [],
+      "source": [
+        "import numpy as np\n",
+        "from collections import Counter, defaultdict\n",
+        "import random"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "vrEhjPjFcz2H"
+      },
+      "source": [
+        "This Jupyter Notebook will guide you through understanding word frequencies and building n-gram models.\n",
+        "Follow the instructions and complete the exercises to deepen your understanding.\n",
+        "\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "-iuKs8accybP"
+      },
+      "outputs": [],
+      "source": [
+        "def tokenize(text):\n",
+        "    \"\"\"Tokenizes the input text into words.\"\"\"\n",
+        "    return text.lower().split()"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "CkFHWE5FdwKI"
+      },
+      "outputs": [],
+      "source": [
+        "sample_text = \"\"\"\n",
+        "Natural language processing is a field of artificial intelligence that focuses on the interaction between computers and humans through language.\n",
+        "It involves developing algorithms and models that enable computers to understand, interpret, and generate human language.\n",
+        "Applications of NLP include machine translation, chatbots, sentiment analysis, and more.\n",
+        "\"\"\""
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "J_OYBQ_fd_kD",
+        "outputId": "78558c72-8304-4eef-8841-5cdbd23b436c"
+      },
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "Tokens: ['natural', 'language', 'processing', 'is', 'a', 'field', 'of', 'artificial', 'intelligence', 'that', 'focuses', 'on', 'the', 'interaction', 'between', 'computers', 'and', 'humans', 'through', 'language.', 'it', 'involves', 'developing', 'algorithms', 'and', 'models', 'that', 'enable', 'computers', 'to', 'understand,', 'interpret,', 'and', 'generate', 'human', 'language.', 'applications', 'of', 'nlp', 'include', 'machine', 'translation,', 'chatbots,', 'sentiment', 'analysis,', 'and', 'more.']\n"
+          ]
+        }
+      ],
+      "source": [
+        "tokens = tokenize(sample_text)\n",
+        "print(\"Tokens:\", tokens)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "W4ee3bpmeNi7"
+      },
+      "source": [
+        "#Exercice 1\n",
+        "Try with different input text and explain how does the tokenize function works"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "9FqD4E6Qep5s"
+      },
+      "source": [
+        "**Answer here**"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 13,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "ge-dvAZBU4H9",
+        "outputId": "a4cd7c4e-f93f-43fa-99f2-d2d8460fcf86"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Tokens: ['some', 'other', 'example']\n",
+            "The tokenize function takes the input (like a sentence or a line of text) and subdivise it down into the smallest level called tokens (it can be word, a number, a symbol or even punctuation) here we breaks it into words.\n"
+          ]
+        }
+      ],
+      "source": [
+        "input_text = \"some other example\"\n",
+        "print (\"Tokens:\", tokenize(input_text))\n",
+        "print (\"The tokenize function takes the input (like a sentence or a line of text) and subdivise it down into the smallest level called tokens (it can be word, a number, a symbol or even punctuation) here we breaks it into words.\")"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "dJo9LazNfMWH"
+      },
+      "source": [
+        "#**Step 2: Word Frequencies**\n",
+        "\n",
+        "Now that we have the tokens, we can compute the frequency of each word in the text.\n",
+        "Let's define a function to compute word frequencies."
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "evdQf2hceCV8"
+      },
+      "outputs": [],
+      "source": [
+        "def compute_word_frequencies(tokens):\n",
+        "    \"\"\"\n",
+        "    Computes word frequencies given a list of tokens.\n",
+        "    \"\"\"\n",
+        "    return Counter(tokens)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "CEpzxZgyf8IW"
+      },
+      "source": [
+        "#Exercice 2\n",
+        "Use the `compute_word_frequencies` function to compute the word frequencies of `tokens`.\n",
+        " Observe which words are the most frequent."
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "2cOWGSp1gP1U"
+      },
+      "source": [
+        "**Answer here**"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 35,
+      "metadata": {
+        "id": "yXpLRYFyfuoT",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "66918ec6-733b-4f59-9156-7437438e6167"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Word Frequencies: Counter({'the': 5, 'dog': 3, 'is': 3, 'and': 2, 'park': 2, 'big': 1, 'brown.': 1, 'likes': 1, 'to': 1, 'run': 1, 'in': 1, 'very': 1, 'green.': 1})\n"
+          ]
+        }
+      ],
+      "source": [
+        "example = \"The dog is big and the dog is brown. The dog likes to run in the park and the park is very green.\"\n",
+        "print(\"Word Frequencies:\", compute_word_frequencies(tokenize(example)))"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "VhJuNyy7nbMe"
+      },
+      "source": [
+        "# **Step 3: N-grams**\n",
+        "Next, we'll compute n-grams from the tokens. N-grams are contiguous sequences of n items from a given sample of text.\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "nxgu2q73npJK"
+      },
+      "outputs": [],
+      "source": [
+        "def compute_ngrams(tokens, n=2):\n",
+        "\n",
+        "    ngrams = []\n",
+        "    for i in range(len(tokens) - n + 1):\n",
+        "        ngrams.append(tuple(tokens[i:i + n]))\n",
+        "    return ngrams"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "HKWmO9cmoMFu"
+      },
+      "source": [
+        "# Exercise 3:\n",
+        "\n",
+        "\n",
+        "1.   Compute bigrams from `tokens` using the `compute_ngrams` function.\n",
+        "2.   Explain how the `compute_ngrams` function works.\n",
+        "\n",
+        "\n"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "XPd2S-ECokRl"
+      },
+      "source": [
+        "**Answer here**"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 36,
+      "metadata": {
+        "id": "qF29YD7IU4H_",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "b044aee1-9ff3-495c-a62e-dd18666f4834"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "[('the', 'dog'), ('dog', 'is'), ('is', 'big'), ('big', 'and'), ('and', 'the'), ('the', 'dog'), ('dog', 'is'), ('is', 'brown.'), ('brown.', 'the'), ('the', 'dog'), ('dog', 'likes'), ('likes', 'to'), ('to', 'run'), ('run', 'in'), ('in', 'the'), ('the', 'park'), ('park', 'and'), ('and', 'the'), ('the', 'park'), ('park', 'is'), ('is', 'very'), ('very', 'green.')]\n",
+            "The function takes a list of tokens and creates sequences of 2 consecutive tokens with the for loop. It finally stores the sequences in ngrams after converting it into a tuple.\n"
+          ]
+        }
+      ],
+      "source": [
+        "bigrams = compute_ngrams(tokenize(example), n=2)\n",
+        "print(bigrams)\n",
+        "print(\"The function takes a list of tokens and creates sequences of 2 consecutive tokens with the for loop. It finally stores the sequences in ngrams after converting it into a tuple.\")"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "yzu3suBYorjH"
+      },
+      "source": [
+        "# **Step 4: Conditional Probabilities**\n",
+        "Now, we'll compute the conditional probabilities for the bigrams.\n",
+        "This will help us understand the likelihood of a word appearing after a given word."
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "GpJes5twn3Eb"
+      },
+      "outputs": [],
+      "source": [
+        "def compute_conditional_probabilities(ngrams):\n",
+        "\n",
+        "    model = defaultdict(lambda: defaultdict(int))\n",
+        "    for ngram in ngrams:\n",
+        "        prefix, next_word = ngram[:-1], ngram[-1]\n",
+        "        model[prefix][next_word] += 1\n",
+        "\n",
+        "    # Convert counts to probabilities\n",
+        "    for prefix, next_words in model.items():\n",
+        "        total_count = float(sum(next_words.values()))\n",
+        "        for word in next_words:\n",
+        "            model[prefix][word] /= total_count\n",
+        "    return model"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "IzCq6-_zqH7m"
+      },
+      "source": [
+        "# Exercise 4:\n",
+        "\n",
+        "1.   Use the `compute_conditional_probabilities` function to compute the probabilities for the bigrams.\n",
+        "2.   Observe the output and understand the probability distribution.\n",
+        "\n"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "LxtJwCLzxafn"
+      },
+      "source": [
+        "**Answer here**"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 37,
+      "metadata": {
+        "id": "SLxCWAWfxX2B",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "3eb0169c-5e5c-41f5-f82e-83daf9edac9d"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "('the',) -> {'dog': 0.6, 'park': 0.4}\n",
+            "('dog',) -> {'is': 0.6666666666666666, 'likes': 0.3333333333333333}\n",
+            "('is',) -> {'big': 0.3333333333333333, 'brown.': 0.3333333333333333, 'very': 0.3333333333333333}\n",
+            "('big',) -> {'and': 1.0}\n",
+            "('and',) -> {'the': 1.0}\n",
+            "('brown.',) -> {'the': 1.0}\n",
+            "('likes',) -> {'to': 1.0}\n",
+            "('to',) -> {'run': 1.0}\n",
+            "('run',) -> {'in': 1.0}\n",
+            "('in',) -> {'the': 1.0}\n",
+            "('park',) -> {'and': 0.5, 'is': 0.5}\n",
+            "('very',) -> {'green.': 1.0}\n"
+          ]
+        }
+      ],
+      "source": [
+        "conditional_probs = compute_conditional_probabilities(bigrams)\n",
+        "for prefix, next_words in conditional_probs.items():\n",
+        "    print(f\"{prefix} -> {dict(next_words)}\")\n"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "GEqaEjQiqdT9"
+      },
+      "source": [
+        "# **Step 5: Text Generation**\n",
+        "We'll use the computed bigram model to generate new text.\n",
+        "We'll start with a given pair of words and use the model to predict the next word iteratively."
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "s4F3XYHaqiaj"
+      },
+      "outputs": [],
+      "source": [
+        "def generate_text(model, start, n_words=50):\n",
+        "\n",
+        "    current = start\n",
+        "    result = list(current)\n",
+        "    for _ in range(n_words):\n",
+        "        if current in model and len(model[current]) > 0:\n",
+        "            next_word = random.choices(list(model[current].keys()), weights=list(model[current].values()))[0]\n",
+        "            result.append(next_word)\n",
+        "            current = tuple(result[-len(current):])\n",
+        "        else:\n",
+        "            break\n",
+        "    return ' '.join(result)\n"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "cLgc7QlUvYIQ"
+      },
+      "source": [
+        "# Exercise 5:\n",
+        "\n",
+        "1.   Use the `generate_text` function to generate text starting with a given pair of words. Hint: Use the `start` variable to define the starting words\n",
+        "\n",
+        "2.   Explain why the function `generate_text` may not generate text with the desired length\n",
+        "\n",
+        "\n",
+        "\n"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "FC_Jt-rVxh0i"
+      },
+      "source": [
+        "**Answer here**"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 43,
+      "metadata": {
+        "id": "fp4Y6t6WxjpH",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "0ba7aa30-5457-44c9-ab2d-02e870e9d370"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "the park and the dog likes to run\n",
+            "The function may not generate the desired length because the current prefix might not exist in the model or have any next words, causing the loop to stop early.\n"
+          ]
+        }
+      ],
+      "source": [
+        "start = ('the',)\n",
+        "generated_text = generate_text(conditional_probs, start, n_words=7)\n",
+        "print(generated_text)\n",
+        "print(\"The function may not generate the desired length because the current prefix might not exist in the model or have any next words, causing the loop to stop early.\")"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "0MrftNCqvsJo"
+      },
+      "source": [
+        "\n",
+        "# **Step 6: Improved Text Generation**\n",
+        "We update the `generate_text` function to to handle unseen n-grams.\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "ivGOqoDzqsv8"
+      },
+      "outputs": [],
+      "source": [
+        "def generate_text_smoothed(model, start, n_words=50, alpha=0.01):\n",
+        "    \"\"\"\n",
+        "    Generates text using the n-gram model with smoothing.\n",
+        "\n",
+        "    This function takes the conditional probability model and a starting sequence of words, then generates new words based on the probabilities.\n",
+        "    It continues generating words until `n_words` are produced or there are no more words to predict.\n",
+        "    Smoothing is applied to handle cases where an n-gram is not present in the model.\n",
+        "\n",
+        "    Parameters:\n",
+        "    model (defaultdict): The conditional probability model.\n",
+        "    start (tuple): The starting sequence of words.\n",
+        "    n_words (int): The number of words to generate.\n",
+        "    alpha (float): Smoothing parameter to handle unseen n-grams.\n",
+        "\n",
+        "    Returns:\n",
+        "    str: The generated text as a single string.\n",
+        "    \"\"\"\n",
+        "    current = start\n",
+        "    result = list(current)\n",
+        "    vocabulary = set(word for next_words in model.values() for word in next_words)\n",
+        "\n",
+        "    for _ in range(n_words):\n",
+        "        if current in model and len(model[current]) > 0:\n",
+        "            next_words = list(model[current].keys())\n",
+        "            probabilities = list(model[current].values())\n",
+        "\n",
+        "            # Apply smoothing\n",
+        "            smoothed_probs = [(p + alpha) / (1 + alpha * len(vocabulary)) for p in probabilities]\n",
+        "            next_word = random.choices(next_words, weights=smoothed_probs)[0]\n",
+        "        else:\n",
+        "            # If the current prefix is not in the model, pick a random word from the vocabulary\n",
+        "            next_word = random.choice(list(vocabulary))\n",
+        "\n",
+        "        result.append(next_word)\n",
+        "        current = tuple(result[-len(current):])\n",
+        "\n",
+        "    return ' '.join(result)"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "JtCsyAg6wttd"
+      },
+      "source": [
+        "# Exercise 6:\n",
+        "\n",
+        "1.   Use the `generate_text_smoothed` function to generate text starting with a given pair of words.\n",
+        "\n",
+        "2.   Explain how the function handles unseen n-grams\n",
+        "3. Experiment with diffrent sample texts and n-grams models (n=3, n=4..) and compare the quality of the generated text\n"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "azC7cy4Axk_Q"
+      },
+      "source": [
+        "**Answer here**"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 46,
+      "metadata": {
+        "id": "GTciMVzvufp-",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "3532b500-e2c0-485b-e36f-cbf155099942"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "the dog likes to run in the dog is brown. the dog is brown. the dog is very green. is brown.\n",
+            "The function handles unseen n-grams by picking a random word from the vocabulary and applying smoothing to give all possible next words a small probability.\n",
+            "Larger n-grams (3, 4) produce more coherent text, while smaller n-grams (2) are simpler but more repetitive and less meaningful.\n"
+          ]
+        }
+      ],
+      "source": [
+        "generated_text = generate_text_smoothed(conditional_probs, start, n_words=20, alpha=0.01)\n",
+        "print(generated_text)\n",
+        "print(\"The function handles unseen n-grams by picking a random word from the vocabulary and applying smoothing to give all possible next words a small probability.\")\n",
+        "print(\"Larger n-grams (3, 4) produce more coherent text, while smaller n-grams (2) are simpler but more repetitive and less meaningful.\")\n"
+      ]
+    }
+  ],
+  "metadata": {
+    "colab": {
+      "provenance": []
+    },
+    "kernelspec": {
+      "display_name": "Python 3",
+      "name": "python3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 0
+}

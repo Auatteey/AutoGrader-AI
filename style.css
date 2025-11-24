@@ -1,0 +1,220 @@
+/* Reset de base pour une cohérence cross-browser */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Styles généraux du body */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Police moderne et professionnelle */
+    color: #333;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* Page de login : background dégradé pour un effet visuel */
+.login-page {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Dégradé subtil pour la page de connexion */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Pages dashboard : fond simple et épuré */
+.dashboard-page {
+    background-color: #f8f9fa; /* Fond gris très clair, neutre */
+    display: block; /* Pas de flex pour un layout plus simple */
+}
+
+/* Conteneur principal : centré, avec ombre légère pour les dashboards, plus prononcée pour login */
+.container {
+    max-width: 900px;
+    width: 100%;
+    margin: 20px auto; /* Centrage vertical ajusté pour dashboards */
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Ombre légère pour un look propre */
+    border: 1px solid #e0e0e0;
+}
+
+/* Pour la page de login, conteneur plus mis en avant */
+.login-page .container {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Ombre plus forte pour le login */
+    margin: 50px auto;
+}
+
+/* Titres */
+h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+h3 {
+    color: #34495e;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+    font-weight: 500;
+    border-bottom: 1px solid #bdc3c7; /* Ligne fine sous les sous-titres */
+    padding-bottom: 8px;
+}
+
+/* Labels pour les formulaires */
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #555;
+}
+
+/* Inputs, selects et textareas */
+input[type="text"],
+input[type="password"],
+input[type="file"],
+select,
+textarea {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    background-color: #ffffff;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="file"]:focus,
+select:focus,
+textarea:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+/* Boutons */
+button {
+    padding: 10px 18px;
+    background-color: #3498db; /* Bleu simple et moderne */
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: auto; /* Pas pleine largeur pour un look moins mis en avant */
+    display: inline-block;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+/* Liens */
+a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #21618c;
+    text-decoration: underline;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #ffffff;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+th {
+    background-color: #f8f9fa;
+    color: #2c3e50;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #ecf0f1;
+}
+
+/* Styles spécifiques pour les formulaires : moins mis en avant */
+form {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #f8f9fa; /* Fond léger pour séparer les sections */
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+        margin: 10px;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    h3 {
+        font-size: 1.2rem;
+    }
+    
+    button {
+        width: 100%; /* Pleine largeur sur mobile pour facilité */
+    }
+    
+    table {
+        font-size: 0.9rem;
+    }
+    
+    th, td {
+        padding: 8px;
+    }
+}
+
+/* Styles pour les messages d'erreur ou de succès */
+.message {
+    padding: 12px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
