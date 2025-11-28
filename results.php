@@ -1,35 +1,63 @@
 <?php
 session_start();
-if(!isset($_SESSION['role']) || $_SESSION['role'] != "etudiant"){
-    header("Location: index.php");
-    exit();
-}
-$username = $_SESSION['username'];
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Résultats Étudiant</title>
+    <title>Résultats – AutoGrader AI</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="container">
-    <h2>Résultats pour <?php echo htmlspecialchars($username); ?></h2>
-    <a href="dashboard_etud.php">Retour</a>
 
-    <table border="1">
-        <tr>
-            <th>Examen</th>
-            <th>Note</th>
-            <th>Feedback</th>
-        </tr>
+<?php include "components/header.php"; ?>
+<?php include "components/sidebar.php"; ?>
+
+<div class="main-content">
+    <div class="card">
+        <h2>📊 Résultats des Examens</h2>
+
         <?php
-        // À remplacer par la lecture des fichiers JSON/csv générés par FastAPI
-        echo "<tr><td>Examen 1</td><td>8/20</td><td>Bonne réponse mais incomplète</td></tr>";
-        echo "<tr><td>Examen 2</td><td>6/20</td><td>Revoir certaines notions</td></tr>";
+        $results_path = __DIR__ . "/results/";
+
+        foreach (scandir($results_path) as $exam) {
+            if ($exam === "." || $exam === "..") continue;
+
+            $csv = $results_path . $exam . "/grades.csv";
+            if (!file_exists($csv)) continue;
+
+            echo "<h3 style='margin-top:25px;color:#a580ff;'>Examen : $exam</h3>";
+
+            echo "<table>";
+            echo "<tr>
+                <th>Étudiant</th>
+                <th>Note</th>
+                <th>Similarité</th>
+                <th>Feedback</th>
+            </tr>";
+
+            $file = fopen($csv, "r");
+            $header = fgetcsv($file);
+
+            while (($row = fgetcsv($file)) !== false) {
+                list($student, $grade, $sim, $feedback) = $row;
+
+                echo "<tr>
+                    <td>$student</td>
+                    <td>$grade</td>
+                    <td>$sim</td>
+                    <td>$feedback</td>
+                </tr>";
+            }
+            fclose($file);
+
+            echo "</table>";
+        }
         ?>
-    </table>
+    </div>
 </div>
+
+<?php include "components/footer.php"; ?>
+
 </body>
 </html>

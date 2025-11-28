@@ -1,17 +1,21 @@
-import os
+# app/utils.py
+from pathlib import Path
+from app.config import RESULTS_DIR
 import csv
+import os
 
-def ensure_dir(path):
-    if not os.path.isdir(path):
-        os.makedirs(path)
+def save_grade_csv(exam_name, student_name, grade, similarity, feedback):
+    exam_result_dir = Path(RESULTS_DIR) / exam_name
+    exam_result_dir.mkdir(parents=True, exist_ok=True)
 
-def save_grade(exam_name, student_name, note):
-    path = f"results/{exam_name}/grades.csv"
-    ensure_dir(os.path.dirname(path))
+    csv_path = exam_result_dir / "grades.csv"
 
-    write_header = not os.path.exists(path)
-    with open(path, "a", newline="") as f:
+    file_exists = csv_path.exists()
+
+    with open(csv_path, "a", encoding="utf-8", newline="") as f:
         writer = csv.writer(f)
-        if write_header:
-            writer.writerow(["student", "grade"])
-        writer.writerow([student_name, note])
+
+        if not file_exists:
+            writer.writerow(["student_name", "grade", "similarity_score", "feedback"])
+
+        writer.writerow([student_name, grade, similarity, f'"{feedback}"'])

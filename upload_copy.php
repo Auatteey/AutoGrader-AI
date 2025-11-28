@@ -1,32 +1,42 @@
 <?php
 session_start();
-if(!isset($_SESSION['role']) || $_SESSION['role'] != "etudiant") {
-    header("Location: index.php");
-    exit();
-}
-$username = $_SESSION['username'];
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $exam_name = $_POST['exam_name'] ?? '';
-    if(empty($exam_name) || !isset($_FILES['copy_file'])) {
-        echo "❌ Veuillez choisir un examen et uploader votre copie.";
-        exit();
-    }
-
-    $ch = curl_init("http://127.0.0.1:8000/api/grade_student");
-    $data = [
-        'exam_name'    => $exam_name,
-        'student_name' => $username,
-        'copy'         => new CURLFile($_FILES['copy_file']['tmp_name'], $_FILES['copy_file']['type'], $_FILES['copy_file']['name'])
-    ];
-
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $response = curl_exec($ch);
-    curl_close($ch);
-
-    echo "✔ Résultat backend : " . $response;
-}
+if($_SESSION['role']!="etudiant"){ header("Location:index.php"); exit(); }
+$username=$_SESSION['username'];
 ?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Your Copy — AutoGrader AI</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<?php include "components/header.php"; ?>
+<?php include "components/sidebar.php"; ?>
+
+<div class="main-content">
+
+    <div class="container">
+        <h2>Upload Your Copy</h2>
+
+        <form action="upload_copy_handler.php" method="post" enctype="multipart/form-data">
+
+            <label>Select Exam</label>
+            <select name="exam_name" required>
+                <?php foreach(scandir("uploads/exams") as $e){ if($e!="." && $e!="..") echo "<option>$e</option>"; } ?>
+            </select>
+
+            <label>Choose your file</label>
+            <input type="file" name="copy_file" required>
+
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+
+</div>
+
+<?php include "components/footer.php"; ?>
+
+</body>
+</html>
