@@ -1,8 +1,7 @@
 
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
-GEMINI_API_KEY = "AIzaSyDezmKFwyO_5rJyxuTBLn7IUBuhkkNqH34"
-
-BASE_UPLOAD_EXAMS = "uploads/exams"
-BASE_UPLOAD_STUDENTS = "uploads/students"
-BASE_RESULTS = "results"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
