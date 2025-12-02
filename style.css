@@ -62,8 +62,8 @@ body {
 .header-right {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding-right: 10px;
+  gap: 12px;
+  padding-right: 32px;
   white-space: nowrap;
 }
 
@@ -184,6 +184,69 @@ body {
   display: flex;
   justify-content: center; /* center horizontally */
   align-items: center; /* center vertically */
+}
+/* ================================
+   DRAG & DROP FILE UPLOAD (AI THEME)
+================================== */
+
+.ai-file-upload {
+  width: 79%;
+  padding: 40px;
+  border: 2px dashed rgba(140, 100, 255, 0.4);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(6px);
+  text-align: center;
+  cursor: pointer;
+  transition: 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.ai-file-upload:hover {
+  border-color: var(--primary);
+  background: rgba(120, 80, 255, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(130, 80, 255, 0.4);
+}
+
+.ai-file-upload svg {
+  width: 55px;
+  height: 55px;
+  fill: var(--primary-light);
+  filter: drop-shadow(0 0 6px rgba(120, 80, 255, 0.4));
+  transition: 0.3s ease;
+}
+
+.ai-file-upload:hover svg {
+  fill: var(--primary);
+}
+
+.ai-file-upload p {
+  color: var(--text-light);
+  font-size: 14px;
+  margin: 0;
+}
+
+.ai-file-upload .browse {
+  color: white;
+  background: var(--primary);
+  padding: 6px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  margin-top: 6px;
+  transition: 0.25s ease;
+}
+
+.ai-file-upload .browse:hover {
+  background: var(--primary-light);
+}
+
+.ai-file-upload input[type="file"] {
+  display: none;
 }
 
 /* ================================

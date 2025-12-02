@@ -39,8 +39,20 @@ $exam_dir = __DIR__ . "/uploads/exams/";
                 ?>
             </select>
 
-            <label>Votre copie (PDF uniquement)</label>
-            <input type="file" name="copy_file" accept="application/pdf" required>
+ <label>Votre copie (PDF uniquement)</label>
+
+<label class="ai-file-upload">
+    <svg height="1em" viewBox="0 0 640 512">
+        <path d="M144 480C64.5 480 0 415.5 0 336..."></path>
+    </svg>
+    <p>Glisser-déposer</p>
+    <p>ou</p>
+    <span class="browse">Choisir un fichier</span>
+    <input type="file" name="copy" required />
+</label>
+
+
+
 
             <button type="submit">Envoyer la copie</button>
 

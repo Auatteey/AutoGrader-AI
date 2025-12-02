@@ -1,0 +1,14 @@
+student_name,grade,similarity_score,feedback
+zinebelmrabet,4.0,0.0,"""The student's report describes basic Mininet usage but does not address the core objective of the lab, which is analyzing OpenFlow exchanges with ONOS using Wireshark. The report covers creating different topologies, but it misses all aspects related to ONOS integration, packet capture, and OpenFlow message analysis (Hello, Packet-In, Packet-Out, Flow-Mod). The student demonstrates understanding of Mininet commands for topology creation but completely fails to demonstrate any grasp of Wireshark usage, ONOS interaction, or OpenFlow protocol analysis as required by the lab instructions. 
+
+The report is a summary of generic Mininet commands without addressing the specific exercises and questions in the lab manual. There's no mention of filtering packets in Wireshark, analyzing packet captures, or understanding the OpenFlow message exchange between Mininet and ONOS.
+
+To improve, the student needs to:
+
+1.  Actually perform the exercises described in the lab manual.
+2.  Use Wireshark to capture network traffic between Mininet and ONOS.
+3.  Apply the specified filters to analyze OpenFlow messages.
+4.  Answer the questions related to the OpenFlow message exchanges and their significance.
+5.  Focus on the interaction between Mininet and ONOS using OpenFlow, and less on general Mininet usage.
+
+Without addressing these points, the student has not completed the lab's objectives."""

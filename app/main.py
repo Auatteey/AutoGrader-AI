@@ -1,113 +1,141 @@
-# app/main.py
-from fastapi import FastAPI, UploadFile, File, Form
-from pathlib import Path
-from app.preprocess import extract_text_from_pdf
+from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.responses import JSONResponse
+import os
+from app.utils import save_pdf_secure
 from app.grader import grade_copy
-from app.utils import save_grade_csv
-from app.config import EXAM_DIR, STUDENT_DIR, RESULTS_DIR
+from app.preprocess import extract_text_from_pdf
+from app.reviews import submit_review, list_reviews, resolve_review
+from app.models.llm import ask_llm
+from app.preprocess import extract_text_from_pdf
+from fastapi import UploadFile, File
 
 app = FastAPI()
 
+@app.post("/upload_exam")
+async def upload_exam(exam_id: str,
+                      questions: UploadFile = File(...),
+                      correction: UploadFile = File(...),
+                      bareme: UploadFile = File(...)):
 
-#########################################
-# UPLOAD EXAM
-#########################################
-@app.post("/api/upload_exam")
-async def upload_exam(
-    exam_name: str = Form(...),
-    questions: UploadFile = File(...),
-    correction: UploadFile = File(...),
-    bareme: UploadFile = File(...)
-):
+    try:
+        base_dir = f"uploads/exams/{exam_id}"
+        os.makedirs(base_dir, exist_ok=True)
 
-    exam_dir = Path(EXAM_DIR) / exam_name
-    exam_dir.mkdir(parents=True, exist_ok=True)
+        q_path = save_pdf_secure(questions, f"{base_dir}/questions")
+        c_path = save_pdf_secure(correction, f"{base_dir}/correction")
+        b_path = save_pdf_secure(bareme, f"{base_dir}/bareme")
 
-    # Save PDFs
-    with open(exam_dir / "questions.pdf", "wb") as f:
-        f.write(await questions.read())
-    with open(exam_dir / "correction.pdf", "wb") as f:
-        f.write(await correction.read())
-    with open(exam_dir / "bareme.pdf", "wb") as f:
-        f.write(await bareme.read())
+        return {"status": "success",
+                "exam_id": exam_id,
+                "paths": {
+                    "questions": q_path,
+                    "correction": c_path,
+                    "bareme": b_path
+                }}
 
-    return {"status": "ok", "message": f"Exam '{exam_name}' uploaded successfully."}
+    except Exception as e:
+        raise HTTPException(500, str(e))
 
 
-#########################################
-# GRADE STUDENT
-#########################################
-@app.post("/api/grade_student")
-async def grade_student(
-    exam_name: str = Form(...),
-    student_name: str = Form(...),
-    copy: UploadFile = File(...)
-):
+@app.post("/upload_copy")
+async def upload_copy(exam_id: str,
+                      student_name: str,
+                      copy: UploadFile = File(...)):
 
-    exam_path = Path(EXAM_DIR) / exam_name
-    correction_pdf = exam_path / "correction.pdf"
-    bareme_pdf = exam_path / "bareme.pdf"
+    try:
+        base_dir = f"uploads/students/{exam_id}/{student_name}"
+        os.makedirs(base_dir, exist_ok=True)
 
-    # Verify exam availability
-    if not exam_path.exists():
-        return {"status": "error", "message": "Exam files missing."}
+        path = save_pdf_secure(copy, f"{base_dir}/copy")
 
-    # Save student copy
-    student_dir = Path(STUDENT_DIR) / exam_name
-    student_dir.mkdir(parents=True, exist_ok=True)
+        return {"status": "success",
+                "exam_id": exam_id,
+                "student": student_name,
+                "path": path}
 
-    copy_path = student_dir / f"{student_name}.pdf"
-    with open(copy_path, "wb") as f:
-        f.write(await copy.read())
+    except Exception as e:
+        raise HTTPException(500, str(e))
+
+
+@app.post("/grade_copy")
+async def grade_exam_copy(exam_id: str,
+                          student_name: str):
+
+    try:
+        base_dir = f"uploads/students/{exam_id}/{student_name}"
+        copy_path = f"{base_dir}/copy.pdf"
+
+        if not os.path.exists(copy_path):
+            raise HTTPException(404, "Student copy not found")
+
+        text = extract_text_from_pdf(copy_path)
+        results = grade_copy(exam_id, student_name, text)
+
+        return {"status": "success",
+                "exam_id": exam_id,
+                "student": student_name,
+                "results": results}
+
+    except Exception as e:
+        raise HTTPException(500, str(e))
+    
+
+   
+
+@app.post("/reviews/submit")
+async def api_submit_review(exam_id: str, student: str, problem_type: str, message: str):
+    return submit_review(exam_id, student, problem_type, message)
+
+@app.get("/reviews/get")
+async def api_get_reviews(exam_id: str):
+    return list_reviews(exam_id)
+
+@app.post("/reviews/resolve")
+async def api_resolve_review(exam_id: str, review_id: str):
+    return resolve_review(exam_id, review_id)
+
+
+
+@app.get("/test/llm")
+def test_llm():
+    res = ask_llm("What is AI?", "AI is...", "AI is intelligence...", 5)
+    return {"result": res}
+
+@app.post("/test/pdf")
+async def test_pdf(file: UploadFile = File(...)):
+    """
+    Test PDF text extraction (PyMuPDF + OCR fallback).
+    """
+    # Save the uploaded file temporarily
+    contents = await file.read()
+    temp_path = "temp_test_pdf.pdf"
+
+    with open(temp_path, "wb") as f:
+        f.write(contents)
 
     # Extract text
-    correction_text = extract_text_from_pdf(correction_pdf)
-    bareme_text = extract_text_from_pdf(bareme_pdf)
-    student_text = extract_text_from_pdf(copy_path)
+    text = extract_text_from_pdf(temp_path)
 
-    # Grade with IA
-    result = grade_copy(student_text, correction_text, bareme_text)
+  
+    return {"extracted_text": text}
 
-    grade = float(result.get("grade", 0))
-    similarity = float(result.get("similarity_score", 0))
-    feedback = result.get("feedback", "No detailed feedback was generated.")
+@app.post("/test/grade")
+async def test_grade():
+    """
+    Test full grading pipeline with one question.
+    """
+    question = "Compute the limit lim (x→0) sin(x)/x."
+    correct_answer = "The limit is 1."
+    student_answer = "The limit goes to 1."
+    bareme = 2
 
-    # Save CSV
-    save_grade_csv(exam_name, student_name, grade, similarity, feedback)
+    from grader import grade_answer
+
+    score, justification = grade_answer(
+        question, correct_answer, student_answer, bareme
+    )
 
     return {
-        "status": "ok",
-        "exam": exam_name,
-        "student": student_name,
-        "grade": grade,
-        "similarity_score": similarity,
-        "feedback": feedback,
-        "message": "Grading complete."
+        "score": score,
+        "justification": justification
     }
-
-
-#########################################
-# GET ALL GRADES FOR EXAM
-#########################################
-@app.get("/api/exam/{exam_name}/grades")
-def get_exam_grades(exam_name: str):
-
-    csv_path = Path(RESULTS_DIR) / exam_name / "grades.csv"
-
-    if not csv_path.exists():
-        return {"status": "error", "message": "No grades available for this exam."}
-
-    # Read CSV
-    rows = []
-    with open(csv_path, "r", encoding="utf-8") as f:
-        for line in f.readlines()[1:]:
-            student, grade, sim, feedback = line.strip().split(",", 3)
-            rows.append({
-                "student": student,
-                "grade": float(grade),
-                "similarity": float(sim),
-                "feedback": feedback.strip('"')
-            })
-
-    return {"status": "ok", "exam": exam_name, "results": rows}
-

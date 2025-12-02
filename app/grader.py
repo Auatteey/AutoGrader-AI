@@ -1,23 +1,88 @@
-from sentence_transformers import SentenceTransformer, util
+import os
+import csv
+from app.models.llm import ask_llm
 
-# Initialisation du modèle global pour réutilisation
-embed_model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 
-def grade_copy(student_text: str, exam_text: str, bareme_text: str):
+def grade_answer(question, correct_answer, student_answer, bareme):
     """
-    Compare le texte de l'étudiant avec la correction et calcule une note.
+    A clean and unified grading function.
+    Returns (score:int, justification:str).
     """
-    # Création des embeddings
-    student_emb = embed_model.encode(student_text, convert_to_tensor=True)
-    correction_emb = embed_model.encode(exam_text, convert_to_tensor=True)
 
-    # Similarité cosinus
-    sim_score = util.cos_sim(student_emb, correction_emb).item()  # valeur entre 0 et 1
+    result = ask_llm(question, correct_answer, student_answer, bareme)
 
-    # Calcul d'une note sur 20
-    grade = round(sim_score * 20, 2)
+    try:
+        lines = result.split("\n")
+        score_line = next((x for x in lines if x.upper().startswith("SCORE")), None)
+        just_line = next((x for x in lines if x.upper().startswith("JUSTIFICATION")), None)
+
+        score = int(score_line.split(":")[1].strip())
+        justification = just_line.split(":", 1)[1].strip()
+
+        return score, justification
+
+    except Exception as e:
+        return 0, f"Parsing error: {e}\nRaw output: {result}"
+
+
+def grade_copy(exam_id: str, student: str, text: str):
+    """
+    SAFE MODE:
+    Treats the entire student copy as a single answer.
+    """
+
+    question = "Correct this mathematical exam."
+    correct_answer = "Refer to the correction PDF."
+    student_answer = text
+    bareme = 20
+
+    score, justification = grade_answer(
+        question,
+        correct_answer,
+        student_answer,
+        bareme
+    )
+
+    results = [{
+        "question": "Q1",
+        "score_final": score,
+        "feedback": justification
+    }]
+
+    total_score = score
+
+    save_grade_csv(exam_id, student, results, total_score)
 
     return {
-        "grade": grade,
-        "similarity_score": sim_score
+        "student": student,
+        "exam_id": exam_id,
+        "questions": results,
+        "total_score": total_score
     }
+
+
+def save_grade_csv(exam_id: str, student: str, results: list, final_score: float):
+    """
+    Saves results/<exam_id>/grades.csv
+    """
+
+    folder = f"results/{exam_id}"
+    os.makedirs(folder, exist_ok=True)
+    path = f"{folder}/grades.csv"
+
+    file_exists = os.path.exists(path)
+
+    with open(path, "a", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+
+        if not file_exists:
+            writer.writerow(["student", "question", "score", "feedback", "total"])
+
+        for r in results:
+            writer.writerow([
+                student,
+                r["question"],
+                r["score_final"],
+                r["feedback"],
+                final_score
+            ])
