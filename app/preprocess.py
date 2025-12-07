@@ -1,6 +1,9 @@
 import fitz  # PyMuPDF
 import re
 import pytesseract
+
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
 from PIL import Image
 import io
 import os
@@ -8,10 +11,8 @@ import os
 
 def extract_text_from_pdf(path: str) -> str:
     """
-    Extraction PDF robuste via PyMuPDF.
-    Fallback : OCR si pages scannées.
+    Robust PDF text extraction with OCR fallback for scanned PDFs.
     """
-
     if not os.path.exists(path):
         return ""
 
@@ -19,17 +20,23 @@ def extract_text_from_pdf(path: str) -> str:
     text_full = ""
 
     for page in doc:
+        # Try native PDF text extraction
         text = page.get_text()
 
-        # Si page vide → OCR fallback
+        # If text empty -> OCR fallback
         if len(text.strip()) < 5:
-            pix = page.get_pixmap()
-            img = Image.open(io.BytesIO(pix.tobytes("png")))
+
+            # Render at 300 DPI = essential for readable OCR
+            pix = page.get_pixmap(dpi=300)
+            img_bytes = pix.tobytes("png")
+            img = Image.open(io.BytesIO(img_bytes))
+
             text = pytesseract.image_to_string(img)
 
         text_full += "\n" + text
 
     return clean_text(text_full)
+
 
 
 def clean_text(text: str) -> str:

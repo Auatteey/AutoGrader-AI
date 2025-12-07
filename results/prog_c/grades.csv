@@ -1,0 +1,25 @@
+student,question,score,similarity,feedback,bareme,student_answer,correct_answer,total
+ayatt,Q1,3.5,0.0,"SCORE: 5
+JUSTIFICATION: Correct and concise answer.",5,,A segmentation fault occurs when memory is accessed illegally.,14.0
+ayatt,Q2,7.0,0.0,"SCORE: 10
+JUSTIFICATION:Correct answer.",10,,"int sum(int a,int b){return a+b;}",14.0
+ayatt,Q3,3.5,0.0,"SCORE: 5
+JUSTIFICATION: Correct answer.",5,,"malloc allocates uninitialized memory, calloc allocates zeroIinitialized memory.",14.0
+ayatt,Q1,3.5,0.0,"SCORE: 5
+JUSTIFICATION: The answer is correct and matches the expected correction.",5,,A segmentation fault occurs when memory is accessed illegally.,14.0
+ayatt,Q2,7.0,0.0,"SCORE: 10
+JUSTIFICATION:Correct answer.",10,,"int sum(int a,int b){return a+b;}",14.0
+ayatt,Q3,3.5,0.0,"SCORE: 5
+JUSTIFICATION: Correct and concise.",5,,"malloc allocates uninitialized memory, calloc allocates zeroIinitialized memory.",14.0
+hayat,Q1,4.79,0.8573741316795349,"SCORE: 5
+JUSTIFICATION: The student correctly identifies that a segmentation fault occurs due to incorrect memory operations (""does something wrong with memory""), which is equivalent to illegal memory access. The example provided (""accessing something that doesn't exist"") further clarifies this understanding.",5,"What is a segmentation fault?
+It happens when the program does something wrong with memory, like accessing something that
+doesn't exist.",A segmentation fault occurs when memory is accessed illegally.,14.26
+hayat,Q2,6.66,0.8385908603668213,"SCORE: 7
+JUSTIFICATION: The function demonstrates a correct understanding of function definition, parameters, return type, and the arithmetic operation. However, it contains a critical syntax error: a missing semicolon after the `return a + b` statement, which would prevent the code from compiling successfully.",10,"Write a C function that returns the sum of two integers.
+int add(int a, int b) {
+return a + b
+} // I think this is right.","int sum(int a,int b){return a+b;}",14.26
+hayat,Q3,2.81,0.7893384695053101,"SCORE: 3
+JUSTIFICATION: The student correctly identified that malloc allocates uninitialized memory. However, for calloc, the explanation is hesitant (""maybe initializes?"") and lacks the key detail that it zero-initializes the memory. The mention of ""slower"" is irrelevant to the core difference being asked.",5,"Explain the difference between malloc and calloc.
+malloc gives memory but not initialized. calloc I think is slower and maybe initializes?","malloc allocates uninitialized memory, calloc allocates zeroIinitialized memory.",14.26

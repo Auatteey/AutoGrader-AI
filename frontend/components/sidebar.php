@@ -1,11 +1,5 @@
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
 <div class="sidebar">
     <ul>
-        <li onclick="location.href='index.php'">
-            <i class="fa-solid fa-house"></i> <span>Accueil</span>
-        </li>
-
         <li onclick="location.href='dashboard_etud.php'">
             <i class="fa-solid fa-file-upload"></i> <span>Étudiant</span>
         </li>
@@ -15,7 +9,7 @@
         </li>
 
         <li onclick="location.href='results.php'">
-            <i class="fa-solid fa-chart-pie"></i> <span>Résultats</span>
+            <i class="fa-solid fa-chart-bar"></i> <span>Résultats</span>
         </li>
 
         <li onclick="location.href='reviews.php'">

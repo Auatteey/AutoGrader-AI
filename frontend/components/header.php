@@ -1,8 +1,4 @@
-<?php
-if (!isset($_SESSION)) { session_start(); }
-?>
 <div class="header">
-
     <div class="header-left">
         <h1 class="app-title">AutoGrader AI</h1>
     </div>
@@ -13,8 +9,7 @@ if (!isset($_SESSION)) { session_start(); }
         <?php endif; ?>
 
         <?php if(isset($_SESSION["username"])): ?>
-            <a class="header-btn logout-btn" href="logout.php">Logout</a>
+            <a class="header-btn" href="logout.php">Logout</a>
         <?php endif; ?>
     </div>
-
 </div>

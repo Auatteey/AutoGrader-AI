@@ -6,7 +6,8 @@ from app.config import GEMINI_API_KEY
 genai.configure(api_key=GEMINI_API_KEY)
 
 # Load the model once
-model = genai.GenerativeModel("gemini-2.0-flash")
+model = genai.GenerativeModel("gemini-2.5-flash")
+
 
 def ask_llm(question, correct_answer, student_answer, bareme):
     """
